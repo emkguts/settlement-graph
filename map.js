@@ -27,21 +27,28 @@ const tooltip = d3.select("body").append("div")
     
     // Find the earliest year with population data
     let firstDataYear = sortedYears.find(year => d[year] !== null);
-    let firstPopulation = d[firstDataYear];
+    let firstDataYearPopulation = d[firstDataYear];
+  
+    // Calculate the initial population (10% of the first data year population)
+    let firstPopulation = firstDataYearPopulation * 0.1;
   
     // Create artificial data point for the establishment year
     if (d.Established < firstDataYear) {
       d[d.Established] = firstPopulation;
     }
   
-    // Fill in missing years with the previous known value
-    let lastKnownValue = firstPopulation;
+    // Calculate the linear growth rate
+    const growthRate = (firstDataYearPopulation - firstPopulation) / (firstDataYear - d.Established);
+  
+    // Fill in missing years with linearly interpolated values
     for (let year of sortedYears) {
-      if (year >= d.Established) {
+      if (year >= d.Established && year <= firstDataYear) {
         if (d[year] === null) {
-          d[year] = lastKnownValue;
-        } else {
-          lastKnownValue = d[year];
+          d[year] = firstPopulation + growthRate * (year - d.Established);
+        }
+      } else if (year > firstDataYear) {
+        if (d[year] === null) {
+          d[year] = d[sortedYears[sortedYears.indexOf(year) - 1]];
         }
       }
     }
