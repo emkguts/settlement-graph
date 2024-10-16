@@ -252,10 +252,14 @@ d3.csv("settlements.csv").then(function(data) {
         .attr("stroke-width", 2.5)
         .attr("stroke", "red");  // Change color to blue on hover
       
+      // Find the most recent population
+      const mostRecentYear = years.find(year => d[year] !== null);
+      const mostRecentPopulation = d[mostRecentYear];
+
       tooltip.transition()
         .duration(200)
         .style("opacity", .9);
-      tooltip.html(`Settlement: ${d.Name}<br>Established: ${d.Established}`)
+      tooltip.html(`Settlement: ${d.Name}<br>Established: ${d.Established}<br>${mostRecentYear} Population: ${mostRecentPopulation.toLocaleString()}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px")
         .style("font-family", "Arial, sans-serif");  // Add sans-serif font
